@@ -8,7 +8,8 @@ import IRSensor as ir
 import time
 
 #-----------VARIABLE DECLARATION---------------#
-desiredDistanceFromWall = 20
+desiredDistanceFromWallLeftRight = 20
+desiredDistanceFromWallFront = 30
 currDirect = "forward"
 prevDirect = "stop"
 power = False
@@ -27,21 +28,25 @@ def updateDirect(currDirect, prevDirect):
                 print(f"Direction: {currDirect}")
         return currDirect
 
-def updateWall(wallDistLeft, wallDistRight, wallDistFront, desiredDistanceFromWall):
-        if wallDistLeft < desiredDistanceFromWall:
+def updateWall(wallDistLeft, wallDistRight, wallDistFront, desiredDistanceFromWallFront, desiredDistanceFromWallLeftRight):
+        wallsOnLeft = True
+        wallsOnRight = True
+        wallsInFront = True
+
+        if wallDistLeft <= desiredDistanceFromWallLeftRight:
                 wallsOnLeft = True
         else:
-                wallsOnRight = False
+                wallsOnLeft = False
 
-        if wallDistRight < desiredDistanceFromWall:
+        if wallDistRight <= desiredDistanceFromWallLeftRight:
                 wallsOnRight = True
         else:
                 wallsOnRight = False
 
-        if wallDistFront > desiredDistanceFromWall:
-                wallInFront = False
-        else:
+        if wallDistFront <= desiredDistanceFromWallFront:
                 wallInFront = True
+        else:
+                wallInFront = False
         
         return wallsOnLeft, wallInFront, wallsOnRight
 
@@ -50,35 +55,53 @@ while True:
         try:
                 # On/off power using touch sensor as on/off button
                 power = touch.checkIfOn(power)
+                time.sleep(.2)
                 if power:
                         # Detect IR beacons
                         IRVal1, IRVal2 = ir.IRRead()
+                        print(IRVal1, IRVal2)
                         if IRVal1 > minIRSensorVal or IRVal2 > minIRSensorVal and time.time() - timeOfIRObstacle > 10:
                                 IRObstacleDetected = True
                                 timeOfIRObstacle = time.time()
                         else:
                                 IRObstacleDetected = False
 
-                        # Detect walls in front and on sides
-                        wallDistLeft, wallDistFront, wallDistRight = us.ultraread(4,5,6)
-                        wallsOnLeft, wallInFront, wallsOnRight = updateWall(wallDistLeft, wallDistRight, wallDistFront, desiredDistanceFromWall)
+                        # Detect walls in front and on side
+                        usDistanceArray = us.ultraread(5,2,6)
+                        wallDistLeft = usDistanceArray[0]
+                        wallDistFront = usDistanceArray[1]
+                        wallDistRight = usDistanceArray[2]
+                        #wallDistLeft, wallDistFront, wallDistRight = us.ultraread(4,5,6)
+                        wallsOnLeft, wallInFront, wallsOnRight = updateWall(wallDistLeft, wallDistRight, wallDistFront, desiredDistanceFromWallFront, desiredDistanceFromWallLeftRight)
+                        print(f"Wall left {wallDistLeft} {wallsOnLeft}")
+                        print(f"Wall right {wallDistRight} {wallsOnRight}")
+                        print(f"Wall front {wallDistFront} {wallInFront}")
 
                         # Direction changes
                         if (wallsOnLeft and wallsOnRight) and not wallInFront:# Keep going forward
+                                print("case 1")
                                 currDirect = "forward"
                         elif wallsOnRight and wallInFront and not wallsOnLeft: # Correcting to adjust left
+                                print("case 2")
                                 currDirect = "left"
                         elif wallsOnLeft and wallInFront and not wallsOnRight:# Correcting to adjust right
+                                print("case 3")
+                                currDirect = "right"
+                        elif wallsOnLeft and not (wallsOnRight and wallInFront):# Correcting to adjust right
+                                print("case 4")
                                 currDirect = "right"
                         elif wallInFront and not (wallsOnLeft and wallsOnRight): # Left has precedence
+                                print("case 5")
                                 currDirect = "left"
-                        else:
-                                print("ERROR with maze navigation algorithm!!!")
+                        elif not(wallInFront and wallsOnLeft and wallsOnRight):
+                                """print("case 6")
+                                currDirect = "left"""
+                        
 
-                        motor.drive(currDirect)
+                        motor.drive(currDirect, False)
                         prevDirect = updateDirect(currDirect, prevDirect)
                 else:
-                        motor.drive("stop")
+                        motor.drive("stop", False)
         
         except KeyboardInterrupt:
                 motor.drive("stop")

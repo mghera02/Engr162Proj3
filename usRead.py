@@ -9,7 +9,7 @@ grovepi.set_bus("RPI_1")
 def ultraread(portL,portM,portR):
     try:
         reading = [grovepi.ultrasonicRead(portL),grovepi.ultrasonicRead(portM),grovepi.ultrasonicRead(portR)]
-        print(reading)
-        #return reading
+        #print(type(reading))
+        return reading
     except Exception as e:
         print ("Error is {}".format(e))

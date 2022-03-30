@@ -8,17 +8,24 @@ BP = brickpi3.BrickPi3() # Create an instance of the BrickPi3 class. BP will be 
 """
 HELPER FUNCTIONS FOR DRIVE()
 """
-def forward():
-    return -40, -40
-
 def backwards():
-    return 40, 40
+    return -20, -20
 
-def right():
-    return 20, -70
+def forward():
+    return 20, 20
 
-def left():
-    return -70, 20
+def right(POC):
+    #Left, right
+    if POC:
+        return 50, -70
+    else:
+        return 60, -60
+
+def left(POC):
+    if POC:
+        return -50, 70
+    else:
+        return 90, -90
 
 def stop():
     return 0, 0
@@ -34,7 +41,7 @@ Possible Parameters:
 "right"
 
 """
-def drive(direction):
+def drive(direction, POC):
     try:
         speed1 = 0 # Speed of motor 1
         speed2 = 0 # Speed of motor 2
@@ -42,9 +49,9 @@ def drive(direction):
         if direction == "forward":
             speed1, speed2 = forward()
         elif direction == "right":
-            speed1, speed2 = right()
+            speed1, speed2 = right(POC)
         elif direction == "left":
-            speed1, speed2 = left()
+            speed1, speed2 = left(POC)
         elif direction == "backwards":
             speed1, speed2 = backwards()
         else:

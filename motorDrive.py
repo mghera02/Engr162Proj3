@@ -12,20 +12,26 @@ def backwards():
     return -20, -20
 
 def forward():
-    return 20, 20
+    return 30, 20
 
-def right(POC):
+def right(POC, power):
     #Left, right
     if POC:
-        return 50, -70
-    else:
-        return 60, -60
-
-def left(POC):
-    if POC:
-        return -50, 70
-    else:
         return 90, -90
+    else:
+        if (power == "high"):
+            return 40, -40
+        else:
+            return 30, -30
+
+def left(POC, power):
+    if POC:
+        return -90, 90
+    else:
+        if (power == "high"):
+            return -40, 40
+        else:
+            return -30, 30
 
 def stop():
     return 0, 0
@@ -41,7 +47,7 @@ Possible Parameters:
 "right"
 
 """
-def drive(direction, POC):
+def drive(direction, POC, power):
     try:
         speed1 = 0 # Speed of motor 1
         speed2 = 0 # Speed of motor 2
@@ -49,9 +55,9 @@ def drive(direction, POC):
         if direction == "forward":
             speed1, speed2 = forward()
         elif direction == "right":
-            speed1, speed2 = right(POC)
+            speed1, speed2 = right(POC, power)
         elif direction == "left":
-            speed1, speed2 = left(POC)
+            speed1, speed2 = left(POC, power)
         elif direction == "backwards":
             speed1, speed2 = backwards()
         else:

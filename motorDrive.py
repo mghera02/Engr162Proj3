@@ -9,7 +9,7 @@ BP = brickpi3.BrickPi3() # Create an instance of the BrickPi3 class. BP will be 
 HELPER FUNCTIONS FOR DRIVE()
 """
 def backwards():
-    return -20, -20
+    return -30, -30
 
 def forward():
     return 30, 20
@@ -17,7 +17,7 @@ def forward():
 def right(POC, power):
     #Left, right
     if POC:
-        return 90, -90
+        return 50, -50
     else:
         if (power == "high"):
             return 40, -40
@@ -26,7 +26,7 @@ def right(POC, power):
 
 def left(POC, power):
     if POC:
-        return -90, 90
+        return -50, 50
     else:
         if (power == "high"):
             return -40, 40
@@ -64,6 +64,8 @@ def drive(direction, POC, power):
             speed1, speed2 = stop()
             
         BP.set_motor_power(BP.PORT_A, speed1)
+        BP.set_motor_power(BP.PORT_C, -speed1)
+        BP.set_motor_power(BP.PORT_D, -speed2)
         BP.set_motor_power(BP.PORT_B, speed2)
         
     except KeyboardInterrupt:

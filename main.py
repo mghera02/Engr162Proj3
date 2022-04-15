@@ -3,9 +3,11 @@ import motorDrive as motor
 import tSensor as touch
 import usRead as us
 import IRSensor as ir
+import imuMag as imu
 
 #-----------OTHER LIBRARY IMPORTS--------------#
 import time
+from MPU9250 import MPU9250
 
 #-----------VARIABLE DECLARATION---------------#
 desiredDistanceFromWallLeftRight = 17
@@ -82,6 +84,14 @@ while True:
                                 timeOfIRObstacle = time.time()
                         else:
                                 IRObstacleDetected = False
+
+                        mpu9250 = MPU9250()
+                        magVal1, magVal2 = imu.magRead(mpu9250)
+                        if magVal1 > minIMUSensorVal or magVal2 > minIMUSensorVal and time.time() - timeOfIRObstacle > 10:
+                                MagObstacleDetected = True
+                                timeOfIRObstacle = time.time()
+                        else:
+                                MagObstacleDetected = False
 
                         # Detect walls in front and on side
                         usDistanceArray = us.ultraread(5,2,6)

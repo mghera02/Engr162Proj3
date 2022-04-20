@@ -1,5 +1,6 @@
 import grovepi
 from IR_Functions import *
+import time
 
 IR_setup(grovepi)
 
@@ -17,4 +18,3 @@ def IRRead():
     except IOError:
         #print ("Error")
         return "error"
-

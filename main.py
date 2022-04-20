@@ -11,7 +11,7 @@ from MPU9250 import MPU9250
 
 #-----------VARIABLE DECLARATION---------------#
 desiredDistanceFromWallLeftRight = 17
-desiredCriticalDistanceFromWallLeftRight = 7
+desiredCriticalDistanceFromWallLeftRight = 5
 desiredDistanceFromWallFront = 25
 currDirect = "forward"
 prevDirect = "stop"
@@ -77,7 +77,7 @@ while True:
                 time.sleep(.2)
                 if power:
                         # Detect IR beacons
-                        IRVal1, IRVal2 = ir.IRRead()
+                        """IRVal1, IRVal2 = ir.IRRead()
                         print(IRVal1, IRVal2)
                         if IRVal1 > minIRSensorVal or IRVal2 > minIRSensorVal and time.time() - timeOfIRObstacle > 10:
                                 IRObstacleDetected = True
@@ -92,7 +92,7 @@ while True:
                                 timeOfIRObstacle = time.time()
                         else:
                                 MagObstacleDetected = False
-
+                        """
                         # Detect walls in front and on side
                         usDistanceArray = us.ultraread(5,2,6)
                         wallDistLeft = usDistanceArray[0]
@@ -122,26 +122,26 @@ while True:
                                 elif wallsOnRight and wallInFront and not wallsOnLeft: # Correcting to adjust left
                                         print("case 2")
                                         if (prevDirect == "forward"):
-                                                time.sleep(2)
+                                                time.sleep(1)
                                 elif wallsOnLeft and wallInFront and not wallsOnRight:# Correcting to adjust right
                                         print("case 3")
                                         if (prevDirect == "forward"):
-                                                time.sleep(2)
+                                                time.sleep(1)
                                         currDirect = "right"
                                 elif wallsOnLeft and not (wallsOnRight and wallInFront):# Correcting to adjust right
                                         print("case 4")
                                         if (prevDirect == "forward"):
-                                                time.sleep(2)
+                                                time.sleep(1)
                                         currDirect = "right"
                                 elif wallsOnRight and not (wallsOnLeft and wallInFront):# Correcting to adjust right
                                         print("case 5")
                                         if (prevDirect == "forward"):
-                                                time.sleep(2)
+                                                time.sleep(1)
                                         currDirect = "left"
                                 elif wallInFront and not (wallsOnLeft and wallsOnRight): # Left has precedence
                                         print("case 6")
                                         if (prevDirect == "forward"):
-                                                time.sleep(2)
+                                                time.sleep(1)
                                 elif not(wallInFront and wallsOnLeft and wallsOnRight):
                                         """print("case 6")
                                         currDirect = "left"""

@@ -16,7 +16,7 @@ minIMUSensorVal = 20
 minIRSensorVal = 20 # NEEDS TO BE CHANGED THIS IS JUST A RANDOM NUMBER
 IRObstacleDetected = False
 timeOfIRObstacle = 0
-points = [(1,1),(2,2),(1,2)]
+points = [(0,2),(1,2),(0,2)]
 currCoord = (0,0)
 
 #-------------HELPER FUNCTIONS-----------------#

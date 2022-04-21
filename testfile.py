@@ -3,7 +3,7 @@
 import time
 import grovepi
 import usRead
-grovepi.set_bus("RPI_1")
+
 distArray = [0,0,0]
 while True:
     try:

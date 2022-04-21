@@ -3,13 +3,16 @@ import motorDrive as motor
 import tSensor as touch
 import usRead as us
 import IRSensor as ir
+import imuMag as imu
 
 #-----------OTHER LIBRARY IMPORTS--------------#
 import time
+from MPU9250 import MPU9250
 
 #-----------VARIABLE DECLARATION---------------#
-desiredDistanceFromWallLeftRight = 20
-desiredDistanceFromWallFront = 30
+desiredDistanceFromWallLeftRight = 17
+desiredCriticalDistanceFromWallLeftRight = 5
+desiredDistanceFromWallFront = 25
 currDirect = "forward"
 prevDirect = "stop"
 power = False
@@ -50,6 +53,22 @@ def updateWall(wallDistLeft, wallDistRight, wallDistFront, desiredDistanceFromWa
         
         return wallsOnLeft, wallInFront, wallsOnRight
 
+def updateCriticalWall(wallDistLeft, wallDistRight, desiredCriticalDistanceFromWallLeftRight):
+        wallsOnLeft = True
+        wallsOnRight = True
+
+        if wallDistLeft <= desiredCriticalDistanceFromWallLeftRight:
+                wallsOnLeft = True
+        else:
+                wallsOnLeft = False
+
+        if wallDistRight <= desiredCriticalDistanceFromWallLeftRight:
+                wallsOnRight = True
+        else:
+                wallsOnRight = False
+        
+        return wallsOnLeft, wallsOnRight
+
 #------------------MAIN LOOP------------------#
 while True:
         try:
@@ -58,7 +77,7 @@ while True:
                 time.sleep(.2)
                 if power:
                         # Detect IR beacons
-                        IRVal1, IRVal2 = ir.IRRead()
+                        """IRVal1, IRVal2 = ir.IRRead()
                         print(IRVal1, IRVal2)
                         if IRVal1 > minIRSensorVal or IRVal2 > minIRSensorVal and time.time() - timeOfIRObstacle > 10:
                                 IRObstacleDetected = True
@@ -66,6 +85,14 @@ while True:
                         else:
                                 IRObstacleDetected = False
 
+                        mpu9250 = MPU9250()
+                        magVal1, magVal2 = imu.magRead(mpu9250)
+                        if magVal1 > minIMUSensorVal or magVal2 > minIMUSensorVal and time.time() - timeOfIRObstacle > 10:
+                                MagObstacleDetected = True
+                                timeOfIRObstacle = time.time()
+                        else:
+                                MagObstacleDetected = False
+                        """
                         # Detect walls in front and on side
                         usDistanceArray = us.ultraread(5,2,6)
                         wallDistLeft = usDistanceArray[0]
@@ -76,32 +103,54 @@ while True:
                         print(f"Wall left {wallDistLeft} {wallsOnLeft}")
                         print(f"Wall right {wallDistRight} {wallsOnRight}")
                         print(f"Wall front {wallDistFront} {wallInFront}")
+                        criticalWallOnLeft, criticalWallOnRight = updateCriticalWall(wallDistLeft, wallDistRight, desiredCriticalDistanceFromWallLeftRight)
 
-                        # Direction changes
-                        if (wallsOnLeft and wallsOnRight) and not wallInFront:# Keep going forward
-                                print("case 1")
-                                currDirect = "forward"
-                        elif wallsOnRight and wallInFront and not wallsOnLeft: # Correcting to adjust left
-                                print("case 2")
-                                currDirect = "left"
-                        elif wallsOnLeft and wallInFront and not wallsOnRight:# Correcting to adjust right
-                                print("case 3")
+                        if criticalWallOnLeft:
+                                print("case 101")
                                 currDirect = "right"
-                        elif wallsOnLeft and not (wallsOnRight and wallInFront):# Correcting to adjust right
-                                print("case 4")
-                                currDirect = "right"
-                        elif wallInFront and not (wallsOnLeft and wallsOnRight): # Left has precedence
-                                print("case 5")
+                                power = "low"
+                        elif criticalWallOnRight:
+                                print("case 102")
                                 currDirect = "left"
-                        elif not(wallInFront and wallsOnLeft and wallsOnRight):
-                                """print("case 6")
-                                currDirect = "left"""
+                                power = "low"
+                        else:
+                                power = "high"
+                                # Direction changes
+                                if (wallsOnLeft and wallsOnRight) and not wallInFront:# Keep going forward
+                                        print("case 1")
+                                        currDirect = "forward"
+                                elif wallsOnRight and wallInFront and not wallsOnLeft: # Correcting to adjust left
+                                        print("case 2")
+                                        if (prevDirect == "forward"):
+                                                time.sleep(1)
+                                elif wallsOnLeft and wallInFront and not wallsOnRight:# Correcting to adjust right
+                                        print("case 3")
+                                        if (prevDirect == "forward"):
+                                                time.sleep(1)
+                                        currDirect = "right"
+                                elif wallsOnLeft and not (wallsOnRight and wallInFront):# Correcting to adjust right
+                                        print("case 4")
+                                        if (prevDirect == "forward"):
+                                                time.sleep(1)
+                                        currDirect = "right"
+                                elif wallsOnRight and not (wallsOnLeft and wallInFront):# Correcting to adjust right
+                                        print("case 5")
+                                        if (prevDirect == "forward"):
+                                                time.sleep(1)
+                                        currDirect = "left"
+                                elif wallInFront and not (wallsOnLeft and wallsOnRight): # Left has precedence
+                                        print("case 6")
+                                        if (prevDirect == "forward"):
+                                                time.sleep(1)
+                                elif not(wallInFront and wallsOnLeft and wallsOnRight):
+                                        """print("case 6")
+                                        currDirect = "left"""
                         
 
-                        motor.drive(currDirect, False)
+                        motor.drive(currDirect, False, power)
                         prevDirect = updateDirect(currDirect, prevDirect)
                 else:
-                        motor.drive("stop", False)
+                        motor.drive("stop", False, power)
         
         except KeyboardInterrupt:
                 motor.drive("stop")

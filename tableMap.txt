@@ -1,0 +1,2 @@
+Hazard Type	|Parameter of Interest	|Parameter Value	|Location X Coordinate [cm]	|Location Y Coordinate [cm]
+Electrical	|Tesla (T)		|0.496			|0				|3

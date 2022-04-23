@@ -1,5 +1,3 @@
-# Class for manipulating the data in one file #
-import intlog10
 class fileObj:
     def __init__(obj,filename):
     #String adds ./ for file address, will add to common file

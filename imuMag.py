@@ -10,3 +10,9 @@ def magRead(obj):
     magn = math.sqrt(pow(mag['x'],2)+pow(mag['y'],2)+pow(mag['z'],2))
     ret = [mag,magn]
     return ret
+
+
+while True:
+    print(magRead(mpu9250))
+    time.sleep(.5)
+

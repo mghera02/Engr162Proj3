@@ -16,7 +16,7 @@ minIMUSensorVal = 20
 minIRSensorVal = 20 # NEEDS TO BE CHANGED THIS IS JUST A RANDOM NUMBER
 IRObstacleDetected = False
 timeOfIRObstacle = 0
-points = [(0,2),(1,2),(0,2)]
+points = [(0,2),(2,1),(3,4)]
 currCoord = (0,0)
 
 #-------------HELPER FUNCTIONS-----------------#
@@ -47,8 +47,8 @@ for point in points:
                 motor.drive("forward", True, "low")
         else:
                 motor.drive("backwards", True, "low")
-        time.sleep(abs(xCoord-currCoord[0])*3.1)
-        motor.drive("stop", False, "low")
+        time.sleep(abs(xCoord-currCoord[0])*2.8)
+        
         for angle in range(90):
                 motor.drive("left", True, "low")
                 time.sleep(.019)
@@ -57,7 +57,7 @@ for point in points:
                 motor.drive("forward", True, "low")
         else:
                 motor.drive("backwards", True, "low")
-        time.sleep(abs(yCoord-currCoord[1])*3.1)
+        time.sleep(abs(yCoord-currCoord[1])*2.8)
         motor.drive("stop", False, "low")
         currCoord = (xCoord, yCoord)
         for angle in range(90):

@@ -7,23 +7,24 @@ from __future__ import division       #                           ''
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
+import math
 
 def mapOut(filename,xsize,ysize):
     fn = "./"+filename
-    pic = np.zeros([xsize, ysize])
     file = open(fn,'r')
     lines = file.readlines()
+    pic = np.zeros([xsize, ysize])
 
     for row in lines:
         gridspace = int(row[0])
-        x = int(row[1])
-        y = int(row[2])
+        x = int(math.floor(float(row[1])))
+        y = int(math.floor(float(row[2])))
         pic[y][x] = gridspace
-    Xaxis = np.linspace(0,5)
-    Yaxis = np.linspace(0,5)
+    Xaxis = np.linspace(0,xsize)
+    Yaxis = np.linspace(0,ysize)
     [X,Y] = np.meshgrid(Xaxis,Yaxis)
     plt.imshow(pic, cmap='gray', interpolation='nearest', origin='lower')
     plt.show()
-    print("end")
     
-mapOut("DatIn.txt",5,5)
+mapOut("DatIn.txt",6,6)
+
